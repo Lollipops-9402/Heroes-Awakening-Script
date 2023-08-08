@@ -1,0 +1,87 @@
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+
+local main = Library.CreateLib("Heroes Awakening Script", "Ocean")
+
+local toggleFarmLoop = false
+local toggleKillAuraLoop = false
+
+local tab = main:NewTab("Main")
+
+local MainSection = tab:NewSection("Farm Hawk")
+MainSection:NewButton("Toggle Farm", "Turns on the farm", function()
+    toggleFarmLoop = not toggleFarmLoop
+    
+    if toggleFarmLoop then
+        print("Farm Loop started.")
+    else
+        print("Farm Loop stopped.")
+    end
+    
+    while toggleFarmLoop do
+        local args = {
+            [1] = "Hero18"
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("questremote"):FireServer(unpack(args))
+        wait(0.3)
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(883, 37.95936965942383, -26)
+        wait(0.4)
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2354.78198, 11.4700127, -739.848145)
+        wait(0.1)
+        workspace.QuestGivers.Hero18.HumanoidRootPart.ProximityPrompt.HoldDuration = 0
+        workspace.QuestGivers.Hero18.HumanoidRootPart.ProximityPrompt.RequiresLineOfSight = false 
+        workspace.QuestGivers.Hero18.HumanoidRootPart.ProximityPrompt.MaxActivationDistance = 10
+        workspace.QuestGivers.Hero18.HumanoidRootPart.ProximityPrompt.Enabled = false
+        wait(0.05)
+        workspace.QuestGivers.Hero18.HumanoidRootPart.ProximityPrompt.Enabled = true
+        fireproximityprompt(workspace.QuestGivers.Hero18.HumanoidRootPart.ProximityPrompt, 1)
+        wait(0.5)
+    end
+end)
+
+local KillAuraSection = tab:NewSection("Kill Aura")
+KillAuraSection:NewButton("Toggle Kill Aura", "Toggles kill aura", function()
+    toggleKillAuraLoop = not toggleKillAuraLoop
+    
+    if toggleKillAuraLoop then
+        print("Kill Aura started.")
+    else
+        print("Kill Aura stopped.")
+    end
+    
+    while toggleKillAuraLoop do
+        local args = {
+            [1] = false,
+            [2] = 1,
+            [4] = "Scythe"
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("Combat"):FireServer(unpack(args))
+        wait(0.05) -- Adjust the delay as needed
+    end
+end)
+
+local miscTab = main:NewTab("Misc")
+local miscSection = miscTab:NewSection("Miscellaneous")
+
+miscSection:NewButton("iy Script", "Executes the Infinite Yield script", function()
+    local loadstringFunction = loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+    
+    if loadstringFunction then
+        loadstringFunction()
+        print("Infinite Yield script executed.")
+    else
+        print("Failed to execute Infinite Yield script.")
+    end
+end)
+
+miscSection:NewButton("Cmd X", "Executes the Cmd X script", function()
+    local loadstringFunction = loadstring(game:HttpGet("https://raw.githubusercontent.com/CMD-X/CMD-X/master/Source", true))()
+    
+    if loadstringFunction then
+        loadstringFunction()
+        print("Cmd X script executed.")
+    else
+        print("Failed to execute Cmd X script.")
+    end
+end)
+
+main:Init()
