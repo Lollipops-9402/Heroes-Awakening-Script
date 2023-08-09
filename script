@@ -14,16 +14,68 @@ if parentFolder then
 else
     print("Parent folder not found:", "AllPlayerData.watermellongg1")
 end
-
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
 
 local main = Library.CreateLib("Heroes Awakening Script", "Ocean")
 
 local toggleFarmLoop = false
 local toggleKillAuraLoop = false
-local toggleQuirkRolling = false
+local toggleQuirkRolling = false -- Add this line
 
 local tab = main:NewTab("Main")
+
+local MainSection = tab:NewSection("Farm Hawk")
+MainSection:NewButton("Toggle Farm", "Turns on the farm", function()
+    toggleFarmLoop = not toggleFarmLoop
+    
+    if toggleFarmLoop then
+        print("Farm Loop started.")
+    else
+        print("Farm Loop stopped.")
+    end
+    
+    while toggleFarmLoop do
+        local args = {
+            [1] = "Hero18"
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("questremote"):FireServer(unpack(args))
+        wait(0.3)
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(883, 37.95936965942383, -26)
+        wait(0.4)
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2354.78198, 11.4700127, -739.848145)
+        wait(0.1)
+        workspace.QuestGivers.Hero18.HumanoidRootPart.ProximityPrompt.HoldDuration = 0
+        workspace.QuestGivers.Hero18.HumanoidRootPart.ProximityPrompt.RequiresLineOfSight = false 
+        workspace.QuestGivers.Hero18.HumanoidRootPart.ProximityPrompt.MaxActivationDistance = 10
+        workspace.QuestGivers.Hero18.HumanoidRootPart.ProximityPrompt.Enabled = false
+        wait(0.05)
+        workspace.QuestGivers.Hero18.HumanoidRootPart.ProximityPrompt.Enabled = true
+        fireproximityprompt(workspace.QuestGivers.Hero18.HumanoidRootPart.ProximityPrompt, 1)
+        wait(0.5)
+    end
+end)
+
+local KillAuraSection = tab:NewSection("Kill Aura")
+KillAuraSection:NewButton("Toggle Kill Aura", "Toggles kill aura", function()
+    toggleKillAuraLoop = not toggleKillAuraLoop
+    
+    if toggleKillAuraLoop then
+        print("Kill Aura started.")
+    else
+        print("Kill Aura stopped.")
+    end
+    
+    while toggleKillAuraLoop do
+        local args = {
+            [1] = false,
+            [2] = 1,
+            [4] = "Scythe"
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("Combat"):FireServer(unpack(args))
+        wait(0.05) -- Adjust the delay as needed
+    end
+end)
+
 
 local QuirkSection = tab:NewSection("Quirk Rolling")
 
@@ -34,49 +86,49 @@ local quirkList = {
     "Invisibility", "Gigantification", "Hardening", "Naval Laser", "Super Strength", "Healing"
 }
 
-local desiredPowers = {}
-
-local function QuirkDropdownCallback(index, value)
-    desiredPowers[index] = value
-    print("Selected Quirk for Dropdown " .. index .. ":", value)
+local function QuirkDropdownCallback(value)
+    print("Selected Quirk:", value)
 end
 
 for i = 1, 5 do
-    QuirkSection:NewDropdown("Quirk " .. i, "Select a quirk", quirkList, function(value)
-        QuirkDropdownCallback(i, value)
-    end)
+    QuirkSection:NewDropdown("Quirk " .. i, "Select a quirk", quirkList, QuirkDropdownCallback)
 end
 
-local quirkSpinToggle = QuirkSection:NewButton("Quirk spin toggle", "Toggle quirk spinning", function()
-    toggleQuirkRolling = not toggleQuirkRolling
-
-    if toggleQuirkRolling then
-        print("Quirk spinning started.")
-    else
-        print("Quirk spinning stopped.")
-    end
+QuirkSection:NewToggle("Roll for desired quirks", "Toggle quirk rolling", function(state)
+    toggleQuirkRolling = state
     
-    while toggleQuirkRolling do
-        local args = {
-            [1] = "spin",
-            [2] = false
-        }
+    if toggleQuirkRolling then
+        print("Quirk Rolling started.")
         
-        game:GetService("ReplicatedStorage"):WaitForChild("SpinQuirk"):FireServer(unpack(args))
-        wait(0.5) -- Adjust the delay as needed
-        
-        local quirk = game:GetService("ReplicatedStorage").AllPlayerData.watermellongg1.CharData.Quirk.Value
-        
-        for i, power in ipairs(desiredPowers) do
-            if quirk == power then
-                print("Obtained desired power:", quirk)
+        while toggleQuirkRolling do
+            local args = {
+                [1] = "spin",
+                [2] = false
+            }
+            
+            game:GetService("ReplicatedStorage"):WaitForChild("SpinQuirk"):FireServer(unpack(args))
+            wait(0.5) -- Adjust the delay as needed
+            
+            local quirk = game:GetService("ReplicatedStorage").AllPlayerData.watermellongg1.CharData.Quirk.Value
+            
+            local foundDesiredPower = false
+            for _, power in ipairs(desiredPowers) do
+                if quirk == power then
+                    print("Obtained desired power:", quirk)
+                    foundDesiredPower = true
+                    break
+                end
+            end
+            
+            if foundDesiredPower then
                 toggleQuirkRolling = false
-                break
             end
         end
+        
+        print("Quirk Rolling stopped.")
+    else
+        print("Quirk Rolling stopped.")
     end
-    
-    print("Quirk spinning stopped.")
 end)
 
 local miscTab = main:NewTab("Misc")
